@@ -5,7 +5,8 @@ from django.utils import timezone
 
 class Vistoria(models.Model):
     autor = models.ForeignKey(settings.AUTH_USER_MODEL, related_name = 'autor_id',  on_delete=models.CASCADE)
-
+    foto = models.TextField(default = 'none')
+    fotoCompilada = models.ImageField( null = True, blank = True)
     #tem como fazer com choice
     cobrad = models.CharField(max_length=200)
     municipios = models.TextField()

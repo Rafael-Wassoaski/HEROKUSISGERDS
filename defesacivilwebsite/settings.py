@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'cvm(%a86^=rffvmz@ymtj^1zu542nxpc_)u%9s_ygwo=fe_0df'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.pythonanywhere.com']
 
@@ -146,13 +146,11 @@ USE_TZ = True
 AUTH_USER_MODEL = "accounts.CustomUser"
 
 STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, '/media/')
+MEDIA_URL = '/imagens/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'imagens/')
 STATIC_ROOT = os.path.join(BASE_DIR, '/static/')
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = 'home'
 
 
-MEDIA_URL = '/media/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+

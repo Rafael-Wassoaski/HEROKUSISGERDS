@@ -9,13 +9,17 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import permissions
 from rest_framework.decorators import api_view, permission_classes
-import json
+import json, base64
+from django.core.files.base import ContentFile
 from django.core import serializers
 from accounts.models import CustomUser
 import reportlab
 from reportlab.pdfgen import canvas
 from django.http import HttpResponse
-
+from PIL import Image
+from base64 import decodestring
+from django.core.files.storage import default_storage
+from django.conf import settings
 
 def relatorio(request):
 	from reportlab.lib.units import cm
@@ -130,10 +134,22 @@ def cadastrovistoria(request):
 		user = CustomUser.objects.get(id = data.get('autor'))
 		serializer = VistoriaSerializer(data=data)
 		if serializer.is_valid():
-			print(serializer)
-			serializer.save()
+			vistoria = serializer.save()
+			print(vistoria)
+			imagem = base64.b64decode(vistoria.foto)
+			nomeArq = '{}{}.jpg'.format(vistoria.id, vistoria.cobrad)
+			#path = default_storage.save(settings.MEDIA_ROOT+'/'+nomeArq)
+			with open(settings.MEDIA_ROOT+nomeArq, 'wb') as file:
+				file.write(imagem)
+				 #path = default_storage.save(settings.MEDIA_ROOT+'/'+nomeArq, file)
+			with open(settings.MEDIA_ROOT+nomeArq, 'rb') as file:
+				vistoria.fotoCompilada.save(nomeArq, file ,save = True)
+				vistoria.save()
 			data = {
 				"status": 200
 			}
+			
+			
+			
 			return JsonResponse(data)
 		return JsonResponse(serializer.errors, status=400)
