@@ -28,67 +28,294 @@ def relatorio(request):
 	from reportlab.pdfbase import pdfmetrics
 	from reportlab.pdfbase.ttfonts import TTFont
 
+	controleLinha = 28.5
+
 	response = HttpResponse(content_type='application/pdf')
 	response['Content-Disposition'] = 'attachment; filename=relatorio.pdf'
 	p = canvas.Canvas(response, pagesize = A4)
 	#pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
-	#p.setFont("Arial", 8)
-	p.drawString(6.8*cm, 28.5*cm, "ESTADO DE SANTA CATARINA")
-	p.drawString(6.8*cm, 28*cm, "SECRETARIA DE ESTADO DA DEFESA CIVIL")
-	p.drawString(6.8*cm, 27.5*cm, "COORDENADORIA REGIONAL DE DEFESA CIVIL")
-	p.drawCentredString(11*cm, 25.5*cm, "RELATÓRIO CIRCUNSTANCIADO Nº           ")
-	p.line(6.7*cm, 25*cm, 15.5*cm, 25*cm)
-	p.drawString(4*cm, 24*cm, "Identificação")
-	uf = "a"
-	municipio = "b"
-	coderec = "c"
-	p.drawString(4*cm, 23.5*cm, "UF: %s Municipio: %s CODEREC: %s" % (uf,municipio,coderec))
-	p.drawString(4*cm, 23*cm, "Tipologia do Desastre")
-	cobrade = "a"
-	descricao = "b"
-	data = "c"
-	hora = "c"
-	p.drawString(4*cm, 22.5*cm, "COBRADE: %s Descricao: %s Data: %s Hora: %s" % (cobrade,descricao,data, hora))
-	descricao = "ajsndjasjdnasjdashjhfsdhbfhjasdhjfsdbfsdhjfbhjasdbhjfbhsdbfhjsdbhjfbhasdbfhbsdhbfhjasdhjfsdfhjbasdfhjsdbhjfbhjsdbfhbsdhfbhsdbfhjsdbfhsdfbsdhjfbsdhjfbsdhjfbsdhbcsbvhbbbbbbbbbbbbbb"
-	p.drawString(4*cm, 22*cm, "Descricao: ")
-	wraped_text = '\n'.join(wrap(descricao, 20)) 
-	p.drawString(6*cm, 22*cm, wraped_text)
-	p.drawString(4*cm, 21.5*cm, "Avaliacao de Danos e Prejuizos")
-	p.drawString(4*cm, 21*cm, "DANOS HUMANOS                                                                                                        SIM  NAO  QUANTIDADE")
-	p.drawString(4*cm, 20.5*cm, "Desalojados")
-	p.drawString(4*cm, 20*cm, "Desabrigados")
-	p.drawString(4*cm, 19.5*cm, "Desaparecidos")
-	p.drawString(4*cm, 19*cm, "Feridos")
-	p.drawString(4*cm, 18.5*cm, "Enfermos")
-	p.drawString(4*cm, 18*cm, "Mortos")
-	p.drawString(4*cm, 17.5*cm, "Isolados")
-	p.drawString(4*cm, 17*cm, "Atingidos")
-	p.drawString(4*cm, 16.5*cm, "Afetados")
-	p.drawString(4*cm, 15*cm, "Observacoes")
-	p.line(4*cm, 14.5*cm, 18*cm, 14.5*cm)
-	p.line(4*cm, 14*cm, 18*cm, 14*cm)
-	p.line(4*cm, 13.5*cm, 18*cm, 13.5*cm)
+	p.setFont("Helvetica", 8)
+	p.drawCentredString(300, controleLinha*cm, "ESTADO DE SANTA CATARINA")
+	controleLinha-= 0.5
+	p.drawCentredString(300, controleLinha*cm, "SECRETARIA DE ESTADO DA DEFESA CIVIL")
+	controleLinha-= 0.5
+	p.drawCentredString(300, controleLinha*cm, "COORDENADORIA REGIONAL DE DEFESA CIVIL")
+	controleLinha-= 0.5
+	p.drawCentredString(300, controleLinha*cm, "RELATÓRIO CIRCUNSTANCIADO Nº           ")
+	controleLinha-= 0.5
+	controleLinha-= 0.5
+	p.drawString(3*cm, controleLinha*cm, "Identificação")
+	controleLinha-= 0.5
+	uf = "SC"
+	municipio = "Canoinhas"
+	coderec = "Rafael Wassoaski"
+	p.rect(2.96*cm, 25.4*cm, 1.95*cm,  0.5*cm)
+	p.rect(4.9*cm, 25.4*cm, 6.8*cm,  0.5*cm)
+	p.rect(11.7*cm, 25.4*cm, 8*cm,  0.5*cm)
+	p.drawString(3*cm, controleLinha*cm, "UF: %s" % (uf))
+	p.drawString(5*cm, controleLinha*cm, "Municipio: %s" % (municipio))
+	p.drawString(11.85*cm, controleLinha*cm, "CODEREC: %s" % (coderec))
+	controleLinha-= 0.5*2
+	p.drawString(3*cm, controleLinha*cm, "Tipologia do Desastre")
+	controleLinha-= 0.5
+	cobrade = "1.2.2.0.0"
+	descricao = "Enxurradas"
+	data = "05 Jan 2017"
+	hora = "17:00"
 
-	p.drawString(4*cm, 13*cm, "DANOS MATERIAIS                                                                                                        SIM  NAO  QUANTIDADE")
-	p.drawString(4*cm, 12.5*cm, "Unidades Habitacionais Atingidas")
-	p.drawString(4*cm, 12*cm, "Unidades Habitacionais Danificadas")
-	p.drawString(4*cm, 11.5*cm, "Unidades Habitacionais Interditadas")
-	p.drawString(4*cm, 11*cm, "Unidades Habitacionais Destruidas")
-	p.drawString(4*cm, 10.5*cm, "Instalacoes Publicas de Saude Atingidas/Danificadas/Destruidas")
-	p.drawString(4*cm, 10*cm, "Instalacoes Publicas de Ensino Atingidas/Danificadas/Destruidas")
-	p.drawString(4*cm, 9.5*cm, "Instalacoes Publicas de uso Comunitario Atingidas/Danificadas/Destruidas")
-	p.drawString(4*cm, 9*cm, "Obras de Infraestrutura Publica Danificada/Destruida")
-	p.drawString(4*cm, 8.5*cm, "Interrupcao de Servicos Essenciais")
-	p.drawString(4*cm, 7*cm, "Observacoes")
-	p.line(4*cm, 6.5*cm, 18*cm, 6.5*cm)
-	p.line(4*cm, 6*cm, 18*cm, 6*cm)
-	p.line(4*cm, 5.5*cm, 18*cm, 5.5*cm)
+	p.rect(2.96*cm, (controleLinha-0.2)*cm, 3.7*cm,  0.5*cm)
+	p.rect(6.66*cm, (controleLinha-0.2)*cm, 6*cm,  0.5*cm)
+	p.rect(12.66*cm, (controleLinha-0.2)*cm, 2.7*cm,  0.5*cm)
+	p.rect(15.36*cm, (controleLinha-0.2)*cm, 4.35*cm,  0.5*cm)
+	p.drawString(3*cm, controleLinha*cm, "COBRADE: %s" % (cobrade))
+	p.drawString(6.7*cm, controleLinha*cm, "Descricao: %s" % (descricao))
+	p.drawString(12.7*cm, controleLinha*cm, "Data: %s" % (data))
+	p.drawString(15.4*cm, controleLinha*cm, "Hora: %s" % (hora))
+	controleLinha-= 0.5*4
+	p.drawString(3.1*cm, controleLinha*cm, "Descricao: ")
+	controleLinha-= 0.5
+	text = p.beginText(3.1*cm,controleLinha*cm)
+	descricaoDesastre = []
+	descricaoDes = "Exemplo: Na data citada, foi registrado de acordo com TAL órgão oficial o volume pluviométrico de xx mm em xx \nhoras, ocasionando a elevação do nível do tal rio. O referido evento adverso ocasionou a \ninundação de tais bairros ou ruas, correspondendo a uma área afetada de aproximadamente x% do município, \ncausando danos e prejuízos citados abaixo. O desastre pode ser classificado como: \nOrigem: Natural Evolução: Súbito ou Gradual Periodicidade: Sazonal"
+	# podeRetirar = 0
+	# ondeCortar = 0
+	# for x in range (0, len(descricaoDes)):
+	# 	if x + 80 >= len(descricaoDes):
+	# 		print(x)
+	# 		descricaoDesastre.append(descricaoDes[x:len(descricaoDes)])
+	# 		break
+	# 	if x>0 and x%80 == 0:
+	# 		podeRetirar = 1
+	# 	if descricaoDes[x] == ' ' and podeRetirar == 1:
+	# 		descricaoDesastre.append(descricaoDes[ondeCortar:x])
+	# 		ondeCortar = x
+	# 		podeRetirar = 0
+			
+	descricaoDesastre = descricaoDes.split("\n")
+	for line in descricaoDesastre:
+		text.textLine(line)
+	p.drawText(text)
+	#(controleLinha-(len(descricaoDesastre)*0.35))*cm
+	controleLinha-= 0.5*len(descricaoDesastre)
+	p.rect(2.96*cm, controleLinha*cm , 16.75*cm, 3.5*cm)
+	controleLinha-= 0.5*2
+	p.drawString(3.1*cm, controleLinha*cm, "Avaliacao de Danos e Prejuizos")
+	controleLinha-= 0.5*2
 
-	p.line(4*cm, 4.5*cm, 18*cm, 4.5*cm)
-	p.drawCentredString(11*cm, 4*cm, "SECRETARIA DE ESTADO DA DEFESA CIVIL")
-	p.drawCentredString(11*cm, 3.5*cm, "Rua Ivo Silveira, 2320 - Capoeiras | CEP 88.085-001 | Florianopolis - SC")
-	p.drawCentredString(11*cm, 3*cm, "www.defesacivil.sc.gov.br")
+	p.drawString(3.1*cm, (controleLinha+0.4)*cm, "Danos Humanos:")
+
+	controleLinha -=0.5
+
+	p.drawString(3.1*cm, controleLinha*cm, "Óbitos relacionados ao desastre")
+	p.drawString(11.1*cm, controleLinha*cm, "Sim: {}".format("X"))
+	p.drawString(13.1*cm, controleLinha*cm, "Não: {}".format(" "))
+	p.drawString(15.1*cm, controleLinha*cm, "Quantidade: {}".format(200))
+
+	p.rect(2.96*cm, (controleLinha-0.15)*cm, 8.04*cm, 0.5*cm)
+	p.rect(11*cm, (controleLinha-0.15)*cm, 2*cm, 0.5*cm)
+	p.rect(13*cm, (controleLinha-0.15)*cm, 2*cm, 0.5*cm)
+	p.rect(15*cm, (controleLinha-0.15)*cm, 4.71*cm, 0.5*cm)
+
+	controleLinha-=0.5*2
+
+	p.drawString(3.1*cm, controleLinha*cm, "População isolada pelo desastre")
+	p.drawString(11.1*cm, controleLinha*cm, "Sim: {}".format("X"))
+	p.drawString(13.1*cm, controleLinha*cm, "Não: {}".format(" "))
+	p.drawString(15.1*cm, controleLinha*cm, "Quantidade: {}".format(200))
+
+	p.rect(2.96*cm, (controleLinha-0.15)*cm, 8.04*cm, 0.5*cm)
+	p.rect(11*cm, (controleLinha-0.15)*cm, 2*cm, 0.5*cm)
+	p.rect(13*cm, (controleLinha-0.15)*cm, 2*cm, 0.5*cm)
+	p.rect(15*cm, (controleLinha-0.15)*cm, 4.71*cm, 0.5*cm)
+
+	controleLinha-=0.5*2
+
+	p.drawString(3.1*cm, controleLinha*cm, "Desalojados/desabrigados")
+	p.drawString(11.1*cm, controleLinha*cm, "Sim: {}".format("X"))
+	p.drawString(13.1*cm, controleLinha*cm, "Não: {}".format(" "))
+	p.drawString(15.1*cm, controleLinha*cm, "Quantidade: {}".format(200))
+
+	p.rect(2.96*cm, (controleLinha-0.15)*cm, 8.04*cm, 0.5*cm)
+	p.rect(11*cm, (controleLinha-0.15)*cm, 2*cm, 0.5*cm)
+	p.rect(13*cm, (controleLinha-0.15)*cm, 2*cm, 0.5*cm)
+	p.rect(15*cm, (controleLinha-0.15)*cm, 4.71*cm, 0.5*cm)
+
+	controleLinha-=0.5*2
+	afetados = 15
+	porcentagem = "16"
+	p.drawString(3.1*cm, controleLinha*cm, "Estimativa da população afetada: {} pessoas, equivalente a {}{} do total de habitantes.".format(afetados, porcentagem, "%"))
+	p.rect(2.96*cm, (controleLinha-0.15)*cm, 16.75*cm, 0.5*cm)
+
+	controleLinha-= 0.5
+	p.line(2.96*cm, controleLinha*cm, 19.74*cm, controleLinha*cm)
+	controleLinha-= 0.5
+	p.drawString(3.1*cm, controleLinha*cm, "Danos Materiais:")
+	controleLinha-= 0.5*2
+	
+	p.drawString(3.1*cm, controleLinha*cm, "Interdição ou destruição de unidades habitacionais")
+	p.drawString(11.1*cm, controleLinha*cm, "Sim: {}".format("X"))
+	p.drawString(13.1*cm, controleLinha*cm, "Não: {}".format(" "))
+	p.drawString(15.1*cm, controleLinha*cm, "Quantidade: {}".format(200))
+
+	p.rect(2.96*cm, (controleLinha-0.15)*cm, 8.04*cm, 0.5*cm)
+	p.rect(11*cm, (controleLinha-0.15)*cm, 2*cm, 0.5*cm)
+	p.rect(13*cm, (controleLinha-0.15)*cm, 2*cm, 0.5*cm)
+	p.rect(15*cm, (controleLinha-0.15)*cm, 4.71*cm, 0.5*cm)
+
+	controleLinha-= 0.5*2
+
+	p.drawString(3*cm, controleLinha*cm, "Interrupção dos serviços essenciais devido a danificação ou destruição de instalações públicas")
+	controleLinha-= 0.5
+	p.drawString(3*cm, controleLinha*cm, "prestadores dos serviços (energia, água, ensino, saúde, etc...) ")
+	controleLinha-= 0.5
+	p.drawString(3*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}".format("X", " ", "Tal"))
+	controleLinha -= 0.5
+	p.rect(2.96*cm, (controleLinha-4)*cm, 16.75*cm, 12.8*cm)
+
+	p.line(3*cm, 3.5*cm, 18.5*cm, 3.5*cm)
+	p.drawCentredString(11*cm, 3*cm, "SECRETARIA DE ESTADO DA DEFESA CIVIL")
+	p.drawCentredString(11*cm, 2.5*cm, "Rua Ivo Silveira, 2320 - Capoeiras | CEP 88.085-001 | Florianopolis - SC")
+	p.drawCentredString(11*cm, 2*cm, "www.defesacivil.sc.gov.br")
 	p.showPage()
+	
+	#fim da pg 1
+	controleLinha = 25.5
+	p.setFont("Helvetica", 8)
+
+	p.drawString(3.1*cm, controleLinha*cm, "Danificação ou destruição de obras de infraestrutura pública (vias afetadas, pontes, drenagem, etc...)")
+	controleLinha-= 0.5
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}".format("X", " ", "Tal"))
+	controleLinha-=3
+	p.rect(2.96*cm, controleLinha*cm, 16.75*cm, 5*cm)
+
+	controleLinha-= 0.5
+
+	p.drawString(3.1*cm, controleLinha*cm, "Danos e Prejuízos Econômicos Privados (agricultura, pecuária, indústria, comércio e serviços)")
+	controleLinha-= 0.5
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}".format("X", " ", "Tal"))
+	controleLinha-=4
+	p.rect(2.96*cm, controleLinha*cm, 16.75*cm, 5*cm)
+
+	controleLinha-= 0.5
+
+	p.drawString(3.1*cm, controleLinha*cm, "Danos Ambientais:")
+
+	controleLinha-= 1
+
+	p.drawString(3.1*cm, controleLinha*cm, "Poluição ou contaminação da água, do ar e do solo, diminuição ou exaurimento hídrico e incêndios em APAs ou APPs.")
+	controleLinha-= 0.5
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}".format("X", " ", "Tal"))
+	controleLinha-=4
+	p.rect(2.96*cm, controleLinha*cm, 16.75*cm, 5*cm)
+
+	controleLinha-= 1
+
+	p.drawString(3.1*cm, controleLinha*cm, "Ações de Socorro, Assistência e Reabilitação realizada pelo município:")
+
+	controleLinha -= 1
+
+	p.drawString(3.1*cm, controleLinha*cm, "Fornecimento de IAH:")
+	controleLinha-= 0.5
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}".format("X", " ", "Tal"))
+	controleLinha-=2
+	p.rect(2.96*cm, controleLinha*cm, 16.75*cm, 3*cm)
+
+	controleLinha -= 0.5
+
+	p.drawString(3.1*cm, controleLinha*cm, "Desobstrução de vias:")
+	controleLinha-= 0.5
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Desobstruído {}{} das vias.".format("X", " ", "21", "%"))
+	controleLinha-=2
+	p.rect(2.96*cm, controleLinha*cm, 16.75*cm, 3*cm)
+
+	controleLinha -= 0.5
+
+	p.drawString(3.1*cm, controleLinha*cm, "Restabelecimento dos serviços essenciais:")
+	controleLinha-= 0.5
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}.".format("X", " ", "tal"))
+	controleLinha-=2
+	p.rect(2.96*cm, controleLinha*cm, 16.75*cm, 3*cm)
+
+	p.rect(2.96*cm, controleLinha*cm, 16.75*cm, 26.5*cm)
+
+	p.showPage()
+
+	#fim da pg 2
+
+	controleLinha = 28.5
+	p.setFont("Helvetica", 8)
+
+	p.drawCentredString(300, controleLinha*cm, "ESTADO DE SANTA CATARINA")
+	controleLinha-= 0.5
+	p.drawCentredString(300, controleLinha*cm, "SECRETARIA DE ESTADO DA DEFESA CIVIL")
+	controleLinha-= 0.5
+	p.drawCentredString(300, controleLinha*cm, "COORDENADORIA REGIONAL DE DEFESA CIVIL")
+	controleLinha-= 1
+
+
+	p.drawString(3.1*cm, controleLinha*cm, "Conclusões:")
+	controleLinha-= 0.5
+	p.drawString(3.1*cm, controleLinha*cm, "Classificação do Desastre")
+	p.rect(2.96*cm, (controleLinha-0.15)*cm, 9*cm, 0.5*cm)
+	p.rect(11.96*cm, (controleLinha-0.15)*cm, 7.75*cm, 0.5*cm)
+	p.drawString(12.1*cm, controleLinha*cm, "Recomendação à homologação")
+	controleLinha-= 0.5
+
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] Não atende aos critérios de classificação".format("X"))
+	p.drawString(12.1*cm, (controleLinha-0.25)*cm, "[{}] Deferimento".format("X"))
+	p.rect(2.96*cm, (controleLinha-0.15)*cm, 9*cm, 0.5*cm)
+	p.rect(11.96*cm, (controleLinha-0.65)*cm, 7.75*cm, 1*cm)
+
+
+	controleLinha-=0.5
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] Desastre de Nível I – Situação de Emergência".format("X"))
+	p.rect(2.96*cm, (controleLinha-0.15)*cm, 9*cm, 0.5*cm)	
+
+	controleLinha-=0.5
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] Desastre de Nível II – Situação de Emergência".format("X"))
+	p.drawString(12.1*cm, (controleLinha-0.25)*cm, "[{}] Indeferimento".format("X"))
+	p.rect(2.96*cm, (controleLinha-0.15)*cm, 9*cm, 0.5*cm)
+	p.rect(11.96*cm, (controleLinha-0.65)*cm, 7.75*cm, 1*cm)
+
+
+	controleLinha-=0.5
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] Desastre de Nível III – Estado de Calamidade Pública".format("X"))
+	p.rect(2.96*cm, (controleLinha-0.15)*cm, 9*cm, 0.5*cm)	
+
+	controleLinha-=1.5
+	p.drawString(3.1*cm, controleLinha*cm, "Informações gerais")
+	controleLinha-=0.5
+
+	controleComeco = controleLinha
+	
+	text = p.beginText(3.5*cm,controleLinha*cm)
+	descricaoDesastre = descricaoDes.split("\n")
+	for line in descricaoDesastre:
+		text.textLine(line)
+	p.drawText(text)
+
+	controleLinha-= 0.5*len(descricaoDesastre)
+	p.rect(2.96*cm, controleLinha*cm , 16.75*cm, (controleComeco - controleLinha + 1)*cm)
+
+	controleLinha -=0.5
+	p.drawString(3.1*cm, controleLinha*cm , "{}/SC, {}".format("Canoinhas", "23-10-1998"))
+
+	controleLinha -=0.5*4
+
+	p.line(6*cm, controleLinha*cm, 16*cm, controleLinha*cm)
+	controleLinha -=0.5
+	p.drawString(8.5*cm, controleLinha*cm, "Assinatura do Coordenador Regional")
+
+
+	p.line(3*cm, 3.5*cm, 18.5*cm, 3.5*cm)
+	p.drawCentredString(11*cm, 3*cm, "SECRETARIA DE ESTADO DA DEFESA CIVIL")
+	p.drawCentredString(11*cm, 2.5*cm, "Rua Ivo Silveira, 2320 - Capoeiras | CEP 88.085-001 | Florianopolis - SC")
+	p.drawCentredString(11*cm, 2*cm, "www.defesacivil.sc.gov.br")
+
+	p.showPage()
+
+	
+
 	p.save()
 	return response
 
