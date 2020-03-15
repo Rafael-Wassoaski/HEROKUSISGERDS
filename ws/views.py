@@ -48,7 +48,7 @@ def relatorio(request, pk):
 	controleLinha-= 0.5
 	p.drawString(3*cm, controleLinha*cm, "Identificação")
 	controleLinha-= 0.5
-	uf = vistoria.uf
+	uf = vistoria.unidadeFederativa
 	municipio = vistoria.municipio
 	coderec = vistoria.autor.name
 	p.rect(2.96*cm, 25.4*cm, 1.95*cm,  0.5*cm)
