@@ -41,7 +41,7 @@ class Vistoria(models.Model):
     ambiente = models.TextField(default = "Não afetada")
 
     iah = models.TextField(default = "Não fornecidas")
-    desobistrucaoVias = models.FloatField(default = 100)
+    desobistrucaoVias = models.FloatField(default = 0)
     reestabelecimentoServicos = models.TextField(default = "Não afetada")
 
     #inteiro para classificar o desastre, 0 Não atende aos critérios de classificação

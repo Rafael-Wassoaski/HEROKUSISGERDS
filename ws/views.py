@@ -21,12 +21,14 @@ from base64 import decodestring
 from django.core.files.storage import default_storage
 from django.conf import settings
 
-def relatorio(request):
+def relatorio(request, pk):
 	from reportlab.lib.units import cm
 	from reportlab.lib.pagesizes import A4
 	from textwrap import wrap
 	from reportlab.pdfbase import pdfmetrics
 	from reportlab.pdfbase.ttfonts import TTFont
+
+	vistoria = Vistoria.objects.get(pk=pk)
 
 	controleLinha = 28.5
 
@@ -39,16 +41,16 @@ def relatorio(request):
 	controleLinha-= 0.5
 	p.drawCentredString(300, controleLinha*cm, "SECRETARIA DE ESTADO DA DEFESA CIVIL")
 	controleLinha-= 0.5
-	p.drawCentredString(300, controleLinha*cm, "COORDENADORIA REGIONAL DE DEFESA CIVIL")
+	p.drawCentredString(300, controleLinha*cm, "COORDENADORIA REGIONAL DE {}".format(vistoria.coordenadoria))
 	controleLinha-= 0.5
-	p.drawCentredString(300, controleLinha*cm, "RELATÓRIO CIRCUNSTANCIADO Nº           ")
+	p.drawCentredString(300, controleLinha*cm, "RELATÓRIO CIRCUNSTANCIADO Nº{}".format(vistoria.numeroDoRelatorio))
 	controleLinha-= 0.5
 	controleLinha-= 0.5
 	p.drawString(3*cm, controleLinha*cm, "Identificação")
 	controleLinha-= 0.5
-	uf = "SC"
-	municipio = "Canoinhas"
-	coderec = "Rafael Wassoaski"
+	uf = vistoria.uf
+	municipio = vistoria.municipio
+	coderec = vistoria.autor.name
 	p.rect(2.96*cm, 25.4*cm, 1.95*cm,  0.5*cm)
 	p.rect(4.9*cm, 25.4*cm, 6.8*cm,  0.5*cm)
 	p.rect(11.7*cm, 25.4*cm, 8*cm,  0.5*cm)
@@ -58,10 +60,10 @@ def relatorio(request):
 	controleLinha-= 0.5*2
 	p.drawString(3*cm, controleLinha*cm, "Tipologia do Desastre")
 	controleLinha-= 0.5
-	cobrade = "1.2.2.0.0"
-	descricao = "Enxurradas"
-	data = "05 Jan 2017"
-	hora = "17:00"
+	cobrade = vistoria.cobrade
+	descricao = vistoria.descricaoCobrade
+	data = vistoria.dataHoraDesastre.split(";")[0];
+	hora = vistoria.dataHoraDesastre.split(";")[1];
 
 	p.rect(2.96*cm, (controleLinha-0.2)*cm, 3.7*cm,  0.5*cm)
 	p.rect(6.66*cm, (controleLinha-0.2)*cm, 6*cm,  0.5*cm)
@@ -76,20 +78,7 @@ def relatorio(request):
 	controleLinha-= 0.5
 	text = p.beginText(3.1*cm,controleLinha*cm)
 	descricaoDesastre = []
-	descricaoDes = "Exemplo: Na data citada, foi registrado de acordo com TAL órgão oficial o volume pluviométrico de xx mm em xx \nhoras, ocasionando a elevação do nível do tal rio. O referido evento adverso ocasionou a \ninundação de tais bairros ou ruas, correspondendo a uma área afetada de aproximadamente x% do município, \ncausando danos e prejuízos citados abaixo. O desastre pode ser classificado como: \nOrigem: Natural Evolução: Súbito ou Gradual Periodicidade: Sazonal"
-	# podeRetirar = 0
-	# ondeCortar = 0
-	# for x in range (0, len(descricaoDes)):
-	# 	if x + 80 >= len(descricaoDes):
-	# 		print(x)
-	# 		descricaoDesastre.append(descricaoDes[x:len(descricaoDes)])
-	# 		break
-	# 	if x>0 and x%80 == 0:
-	# 		podeRetirar = 1
-	# 	if descricaoDes[x] == ' ' and podeRetirar == 1:
-	# 		descricaoDesastre.append(descricaoDes[ondeCortar:x])
-	# 		ondeCortar = x
-	# 		podeRetirar = 0
+	descricaoDes = vistoria.descricaoDesastre
 			
 	descricaoDesastre = descricaoDes.split("\n")
 	for line in descricaoDesastre:
@@ -106,10 +95,17 @@ def relatorio(request):
 
 	controleLinha -=0.5
 
+	sim = ""
+	nao = "x"
+
+	if vistoria.quantiadeObitos > 0:
+		sim = "X"
+		nao = ""
+
 	p.drawString(3.1*cm, controleLinha*cm, "Óbitos relacionados ao desastre")
-	p.drawString(11.1*cm, controleLinha*cm, "Sim: {}".format("X"))
-	p.drawString(13.1*cm, controleLinha*cm, "Não: {}".format(" "))
-	p.drawString(15.1*cm, controleLinha*cm, "Quantidade: {}".format(200))
+	p.drawString(11.1*cm, controleLinha*cm, "Sim: {}".format(sim))
+	p.drawString(13.1*cm, controleLinha*cm, "Não: {}".format(nao))
+	p.drawString(15.1*cm, controleLinha*cm, "Quantidade: {}".format(vistoria.quantiadeObitos))
 
 	p.rect(2.96*cm, (controleLinha-0.15)*cm, 8.04*cm, 0.5*cm)
 	p.rect(11*cm, (controleLinha-0.15)*cm, 2*cm, 0.5*cm)
@@ -117,11 +113,18 @@ def relatorio(request):
 	p.rect(15*cm, (controleLinha-0.15)*cm, 4.71*cm, 0.5*cm)
 
 	controleLinha-=0.5*2
+
+	sim = ""
+	nao = "X"
+
+	if vistoria.quantiadePopuIsolada > 0:
+		sim = "X"
+		nao = ""
 
 	p.drawString(3.1*cm, controleLinha*cm, "População isolada pelo desastre")
-	p.drawString(11.1*cm, controleLinha*cm, "Sim: {}".format("X"))
-	p.drawString(13.1*cm, controleLinha*cm, "Não: {}".format(" "))
-	p.drawString(15.1*cm, controleLinha*cm, "Quantidade: {}".format(200))
+	p.drawString(11.1*cm, controleLinha*cm, "Sim: {}".format(sim))
+	p.drawString(13.1*cm, controleLinha*cm, "Não: {}".format(nao))
+	p.drawString(15.1*cm, controleLinha*cm, "Quantidade: {}".format(vistoria.quantiadePopuIsolada))
 
 	p.rect(2.96*cm, (controleLinha-0.15)*cm, 8.04*cm, 0.5*cm)
 	p.rect(11*cm, (controleLinha-0.15)*cm, 2*cm, 0.5*cm)
@@ -129,11 +132,18 @@ def relatorio(request):
 	p.rect(15*cm, (controleLinha-0.15)*cm, 4.71*cm, 0.5*cm)
 
 	controleLinha-=0.5*2
+
+	sim = ""
+	nao = "X"
+
+	if vistoria.quantidadeDesalojados > 0:
+		sim = "X"
+		nao = ""
 
 	p.drawString(3.1*cm, controleLinha*cm, "Desalojados/desabrigados")
-	p.drawString(11.1*cm, controleLinha*cm, "Sim: {}".format("X"))
-	p.drawString(13.1*cm, controleLinha*cm, "Não: {}".format(" "))
-	p.drawString(15.1*cm, controleLinha*cm, "Quantidade: {}".format(200))
+	p.drawString(11.1*cm, controleLinha*cm, "Sim: {}".format(sim))
+	p.drawString(13.1*cm, controleLinha*cm, "Não: {}".format(nao))
+	p.drawString(15.1*cm, controleLinha*cm, "Quantidade: {}".format(vistoria.quantidadeDesalojados))
 
 	p.rect(2.96*cm, (controleLinha-0.15)*cm, 8.04*cm, 0.5*cm)
 	p.rect(11*cm, (controleLinha-0.15)*cm, 2*cm, 0.5*cm)
@@ -141,8 +151,8 @@ def relatorio(request):
 	p.rect(15*cm, (controleLinha-0.15)*cm, 4.71*cm, 0.5*cm)
 
 	controleLinha-=0.5*2
-	afetados = 15
-	porcentagem = "16"
+	afetados = vistoria.populacaoAfetada
+	porcentagem = vistoria.porcentagemPopulacaoAfetada
 	p.drawString(3.1*cm, controleLinha*cm, "Estimativa da população afetada: {} pessoas, equivalente a {}{} do total de habitantes.".format(afetados, porcentagem, "%"))
 	p.rect(2.96*cm, (controleLinha-0.15)*cm, 16.75*cm, 0.5*cm)
 
@@ -151,11 +161,18 @@ def relatorio(request):
 	controleLinha-= 0.5
 	p.drawString(3.1*cm, controleLinha*cm, "Danos Materiais:")
 	controleLinha-= 0.5*2
+
+	sim = ""
+	nao = "X"
+
+	if vistoria.habitacoesAtingidas > 0:
+		sim = "X"
+		nao = ""
 	
 	p.drawString(3.1*cm, controleLinha*cm, "Interdição ou destruição de unidades habitacionais")
-	p.drawString(11.1*cm, controleLinha*cm, "Sim: {}".format("X"))
-	p.drawString(13.1*cm, controleLinha*cm, "Não: {}".format(" "))
-	p.drawString(15.1*cm, controleLinha*cm, "Quantidade: {}".format(200))
+	p.drawString(11.1*cm, controleLinha*cm, "Sim: {}".format(sim))
+	p.drawString(13.1*cm, controleLinha*cm, "Não: {}".format(nao))
+	p.drawString(15.1*cm, controleLinha*cm, "Quantidade: {}".format(vistoria.habitacoesAtingidas))
 
 	p.rect(2.96*cm, (controleLinha-0.15)*cm, 8.04*cm, 0.5*cm)
 	p.rect(11*cm, (controleLinha-0.15)*cm, 2*cm, 0.5*cm)
@@ -164,11 +181,18 @@ def relatorio(request):
 
 	controleLinha-= 0.5*2
 
+	sim = ""
+	nao = "X"
+
+	if vistoria.interrupcaoDeServi != "Não afetada":
+		sim = "X"
+		nao = ""
+
 	p.drawString(3*cm, controleLinha*cm, "Interrupção dos serviços essenciais devido a danificação ou destruição de instalações públicas")
 	controleLinha-= 0.5
 	p.drawString(3*cm, controleLinha*cm, "prestadores dos serviços (energia, água, ensino, saúde, etc...) ")
 	controleLinha-= 0.5
-	p.drawString(3*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}".format("X", " ", "Tal"))
+	p.drawString(3*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}".format(sim, nao, vistoria.interrupcaoDeServi))
 	controleLinha -= 0.5
 	p.rect(2.96*cm, (controleLinha-4)*cm, 16.75*cm, 12.8*cm)
 
@@ -182,17 +206,31 @@ def relatorio(request):
 	controleLinha = 25.5
 	p.setFont("Helvetica", 8)
 
+	sim = ""
+	nao = "X"
+
+	if vistoria.infraPublica != "Não afetada":
+		sim = "X"
+		nao = ""
+
 	p.drawString(3.1*cm, controleLinha*cm, "Danificação ou destruição de obras de infraestrutura pública (vias afetadas, pontes, drenagem, etc...)")
 	controleLinha-= 0.5
-	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}".format("X", " ", "Tal"))
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}".format(sim, nao, vistoria.infraPublica))
 	controleLinha-=3
 	p.rect(2.96*cm, controleLinha*cm, 16.75*cm, 5*cm)
 
 	controleLinha-= 0.5
 
+	sim = ""
+	nao = "X"
+
+	if vistoria.economiaPrivada != "Não afetada":
+		sim = "X"
+		nao = ""
+
 	p.drawString(3.1*cm, controleLinha*cm, "Danos e Prejuízos Econômicos Privados (agricultura, pecuária, indústria, comércio e serviços)")
 	controleLinha-= 0.5
-	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}".format("X", " ", "Tal"))
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}".format(sim, nao, vistoria.economiaPrivada))
 	controleLinha-=4
 	p.rect(2.96*cm, controleLinha*cm, 16.75*cm, 5*cm)
 
@@ -202,9 +240,16 @@ def relatorio(request):
 
 	controleLinha-= 1
 
+	sim = ""
+	nao = "X"
+
+	if vistoria.ambiente != "Não afetada":
+		sim = "X"
+		nao = ""
+
 	p.drawString(3.1*cm, controleLinha*cm, "Poluição ou contaminação da água, do ar e do solo, diminuição ou exaurimento hídrico e incêndios em APAs ou APPs.")
 	controleLinha-= 0.5
-	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}".format("X", " ", "Tal"))
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}".format(sim, nao, vistoria.ambiente))
 	controleLinha-=4
 	p.rect(2.96*cm, controleLinha*cm, 16.75*cm, 5*cm)
 
@@ -214,25 +259,47 @@ def relatorio(request):
 
 	controleLinha -= 1
 
+	sim = ""
+	nao = "X"
+
+	if vistoria.iah != "Não fornecidas":
+		sim = "X"
+		nao = ""
+
+
 	p.drawString(3.1*cm, controleLinha*cm, "Fornecimento de IAH:")
 	controleLinha-= 0.5
-	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}".format("X", " ", "Tal"))
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}".format(sim, nao, vistoria.iah))
 	controleLinha-=2
 	p.rect(2.96*cm, controleLinha*cm, 16.75*cm, 3*cm)
 
 	controleLinha -= 0.5
+
+	sim = ""
+	nao = "X"
+
+	if vistoria.desobistrucaoVias > 0:
+		sim = "X"
+		nao = ""
 
 	p.drawString(3.1*cm, controleLinha*cm, "Desobstrução de vias:")
 	controleLinha-= 0.5
-	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Desobstruído {}{} das vias.".format("X", " ", "21", "%"))
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Desobstruído {}{} das vias.".format(sim, nao, vistoria.desobistrucaoVias "%"))
 	controleLinha-=2
 	p.rect(2.96*cm, controleLinha*cm, 16.75*cm, 3*cm)
 
 	controleLinha -= 0.5
 
+	sim = ""
+	nao = "X"
+
+	if vistoria.desobistrucaoVias != "Não afetada":
+		sim = "X"
+		nao = ""
+
 	p.drawString(3.1*cm, controleLinha*cm, "Restabelecimento dos serviços essenciais:")
 	controleLinha-= 0.5
-	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}.".format("X", " ", "tal"))
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Quais: {}.".format(sim, nao, vistoria.desobistrucaoVias))
 	controleLinha-=2
 	p.rect(2.96*cm, controleLinha*cm, 16.75*cm, 3*cm)
 
@@ -261,25 +328,48 @@ def relatorio(request):
 	p.drawString(12.1*cm, controleLinha*cm, "Recomendação à homologação")
 	controleLinha-= 0.5
 
-	p.drawString(3.1*cm, controleLinha*cm, "[{}] Não atende aos critérios de classificação".format("X"))
-	p.drawString(12.1*cm, (controleLinha-0.25)*cm, "[{}] Deferimento".format("X"))
+	classificacao1 = ""
+	classificacao2 = ""
+	classificacao3 = ""
+	classificacao4 = ""
+
+	if vistoria.classificacao == 0:
+		classificacao1 = "X"
+	if vistoria.classificacao == 1:
+		classificacao2 = "X"
+	if vistoria.classificacao == 2:
+		classificacao3 = "X"
+	if vistoria.classificacao == 3:
+		classificacao4 = "X"	
+
+
+
+	sim = ""
+	nao = ""
+	if vistoria.homologacao:
+		sim = "X"
+	else:
+		nao = "X"
+	
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] Não atende aos critérios de classificação".format(classificacao1))
+	p.drawString(12.1*cm, (controleLinha-0.25)*cm, "[{}] Deferimento".format(sim))
 	p.rect(2.96*cm, (controleLinha-0.15)*cm, 9*cm, 0.5*cm)
 	p.rect(11.96*cm, (controleLinha-0.65)*cm, 7.75*cm, 1*cm)
 
 
 	controleLinha-=0.5
-	p.drawString(3.1*cm, controleLinha*cm, "[{}] Desastre de Nível I – Situação de Emergência".format("X"))
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] Desastre de Nível I – Situação de Emergência".format(classificacao2))
 	p.rect(2.96*cm, (controleLinha-0.15)*cm, 9*cm, 0.5*cm)	
 
 	controleLinha-=0.5
-	p.drawString(3.1*cm, controleLinha*cm, "[{}] Desastre de Nível II – Situação de Emergência".format("X"))
-	p.drawString(12.1*cm, (controleLinha-0.25)*cm, "[{}] Indeferimento".format("X"))
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] Desastre de Nível II – Situação de Emergência".format(classificacao3))
+	p.drawString(12.1*cm, (controleLinha-0.25)*cm, "[{}] Indeferimento".format(nao))
 	p.rect(2.96*cm, (controleLinha-0.15)*cm, 9*cm, 0.5*cm)
 	p.rect(11.96*cm, (controleLinha-0.65)*cm, 7.75*cm, 1*cm)
 
 
 	controleLinha-=0.5
-	p.drawString(3.1*cm, controleLinha*cm, "[{}] Desastre de Nível III – Estado de Calamidade Pública".format("X"))
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] Desastre de Nível III – Estado de Calamidade Pública".format(classificacao4))
 	p.rect(2.96*cm, (controleLinha-0.15)*cm, 9*cm, 0.5*cm)	
 
 	controleLinha-=1.5
@@ -289,7 +379,7 @@ def relatorio(request):
 	controleComeco = controleLinha
 	
 	text = p.beginText(3.5*cm,controleLinha*cm)
-	descricaoDesastre = descricaoDes.split("\n")
+	descricaoDesastre = vistoria.infosGerais.split("\n")
 	for line in descricaoDesastre:
 		text.textLine(line)
 	p.drawText(text)
@@ -298,7 +388,7 @@ def relatorio(request):
 	p.rect(2.96*cm, controleLinha*cm , 16.75*cm, (controleComeco - controleLinha + 1)*cm)
 
 	controleLinha -=0.5
-	p.drawString(3.1*cm, controleLinha*cm , "{}/SC, {}".format("Canoinhas", "23-10-1998"))
+	p.drawString(3.1*cm, controleLinha*cm , "{}/SC, {}".format(vistoria.municipio, vistoria.dataHoraRegistrado.split()))
 
 	controleLinha -=0.5*4
 
@@ -364,7 +454,7 @@ def cadastrovistoria(request):
 			vistoria = serializer.save()
 			print(vistoria)
 			imagem = base64.b64decode(vistoria.foto)
-			nomeArq = '{}{}.jpg'.format(vistoria.id, vistoria.cobrad)
+			nomeArq = '{}{}.jpg'.format(vistoria.id, vistoria.cobrade)
 			#path = default_storage.save(settings.MEDIA_ROOT+'/'+nomeArq)
 			with open(settings.MEDIA_ROOT+nomeArq, 'wb') as file:
 				file.write(imagem)

@@ -133,7 +133,7 @@ def indeferir(request, pk):
 def vistoria_pdf(request, pk):
 	vistoria = Vistoria.objects.get(pk = pk)
 	vistoriaSimples = simpleVistoria(vistoria.autor)
-	vistoriaSimples.cobrad = vistoria.cobrad
+	vistoriaSimples.cobrade = vistoria.cobrade
 	vistoriaSimples.municipios = vistoria.municipios
 	vistoriaSimples.descricao = vistoria.descricao
 	dataHora = vistoria.dataDesastre.split(';')
