@@ -388,7 +388,7 @@ def relatorio(request, pk):
 	p.rect(2.96*cm, controleLinha*cm , 16.75*cm, (controleComeco - controleLinha + 1)*cm)
 
 	controleLinha -=0.5
-	p.drawString(3.1*cm, controleLinha*cm , "{}/SC, {}".format(vistoria.municipio, vistoria.dataHoraRegistrado.split()))
+	p.drawString(3.1*cm, controleLinha*cm , "{}/SC, {}".format(vistoria.municipio, vistoria.dataHoraRegistrado))
 
 	controleLinha -=0.5*4
 
