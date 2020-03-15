@@ -284,7 +284,7 @@ def relatorio(request, pk):
 
 	p.drawString(3.1*cm, controleLinha*cm, "Desobstrução de vias:")
 	controleLinha-= 0.5
-	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Desobstruído {}{} das vias.".format(sim, nao, vistoria.desobistrucaoVias "%"))
+	p.drawString(3.1*cm, controleLinha*cm, "[{}] SIM [{}] NÃO - Desobstruído {}{} das vias.".format(sim, nao, vistoria.desobistrucaoVias, "%"))
 	controleLinha-=2
 	p.rect(2.96*cm, controleLinha*cm, 16.75*cm, 3*cm)
 
