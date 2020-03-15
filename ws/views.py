@@ -50,7 +50,7 @@ def relatorio(request, pk):
 	controleLinha-= 0.5
 	uf = vistoria.unidadeFederativa
 	municipio = vistoria.municipio
-	coderec = vistoria.autor.name
+	coderec = "{} {}".format(vistoria.autor.first_name, vistoria.autor.last_name)
 	p.rect(2.96*cm, 25.4*cm, 1.95*cm,  0.5*cm)
 	p.rect(4.9*cm, 25.4*cm, 6.8*cm,  0.5*cm)
 	p.rect(11.7*cm, 25.4*cm, 8*cm,  0.5*cm)
